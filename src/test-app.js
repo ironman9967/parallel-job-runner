@@ -121,9 +121,9 @@ export default () => {
 		}
 	}
 	
-	const iterations = process.argv[2] || 500
-	const complexity = process.argv[3] || 500
-	const runs = process.argv[4] || 5
+	const runs = process.argv[2] || 5
+	const iterations = process.argv[3] || 500
+	const complexity = process.argv[4] || 500
 	const getWorkerCount = () => process.argv[5] || os.cpus().length - 1
 	
 	const { createJob } = createJobCreator({

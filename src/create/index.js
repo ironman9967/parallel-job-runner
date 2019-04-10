@@ -1,34 +1,70 @@
 
-import os from 'os'
 import cluster from 'cluster'
 
 import { queue } from 'async'
+import uuid from 'uuid/v1'
 
 import { perform } from '../perform'
-import { start } from '../start'
+import { create as createStart } from '../start'
 
-export const create = () => {
-	let q
-	if (cluster.isMaster) {
-		q = queue((notUsed, cb) => cluster.isMaster 
-			? start().then(cb).catch(cb)
-			: void 0, os.cpus().length - 1)
-	}
+const createJobIdMaanger = () => {
+	const workRepo = {}
+	let workIndex = 0
 	return {
-		createJob: ({ job }) => ({
-			startJob: data => new Promise((resolve, reject) => {
-				if (cluster.isMaster) {
+		manageWork: work => {
+			if (cluster.isMaster) {
+				const id = uuid()
+				workRepo[id] = work
+				return Promise.resolve({
+					id,
+					work
+				})
+			}
+			workIndex++
+			const workIdListener = process.on('message', msg => {
+				if (msg.type == 'work-id') {
 					
-					console.log('master', process.pid)
+					console.log('asdf', msg)
 					
-					q.push(void 0, res => res instanceof Error
-						? reject(res)
-						: resolve(res))
-				}
-				else {
-					perform(job)(data)
+					process.removeEventListener(workIdListener)
 				}
 			})
+			process.send({
+				type: 'get-work-id',
+				workIndex
+			})
+			return Promise.resolve({
+				id: 'asdf;laksdfj',
+				work
+			})
+		}
+	}
+}
+
+export const create = () => {
+	const { numOfWorkers, start } = createStart()
+	let q
+	if (cluster.isMaster) {
+		q = queue((job, cb) => start(job).then(cb).catch(cb), numOfWorkers)
+	}
+	const { manageWork } = createJobIdMaanger()
+	return {
+		createJob: ({ job: work }) => manageWork(work).then(job => {
+			let workerIndex = 0
+			return {
+				startJob: data => new Promise((resolve, reject) => {
+					if (cluster.isMaster) {
+						q.push({ 
+							id: job.id, 
+							workerIndex, 
+							data
+						}, res => res instanceof Error
+							? reject(res)
+							: resolve(res))
+						workerIndex++
+					}
+				})
+			}
 		})
 	}
 }

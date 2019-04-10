@@ -1,5 +1,8 @@
 
 export const perform = job => data => {
+		
+	console.log(process.env.jobId)
+	
 	const res = job(data)
 	const prom = res instanceof Promise
 		? res

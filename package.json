@@ -5,7 +5,6 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "rm -rf dist && babel src -d dist",
-		"start": "npm run build && node dist/index.js",
 		"start-test-app": "npm run build && node dist/test-index.js",
 		"watch": "npm-watch"
 	},
@@ -17,7 +16,12 @@
 		"@babel/core": "^7.3.4",
 		"@babel/preset-env": "^7.3.4",
 		"babel-plugin-dynamic-import-node": "^2.2.0",
+		"fibonacci": "^1.6.6",
 		"npm-watch": "^0.6.0"
+	},
+	"dependencies": {
+		"async": "^2.6.2",
+		"uuid": "^3.3.2"
 	},
 	"babel": {
 		"presets": [

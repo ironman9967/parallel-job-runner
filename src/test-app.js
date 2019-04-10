@@ -141,18 +141,20 @@ export default () => {
 		console.log('workerCount:', getWorkerCount())
 		console.log('#####################')
 	}
-	const proms = []
+	const iterationProms = []
 	for (let i = 0; i < iterations; i++) {
-		proms.push(startFibonacciJob(complexity))
+		iterationProms.push(startFibonacciJob(complexity))
 	}
+	let runProms = []
 	for (let i = 0; i < runs; i++) {
-		Promise.all(proms).then(res => {
+		runProms = runProms.concat(Promise.all(iterationProms).then(res => {
 			if (cluster.isMaster) {
 				const end = Date.now()
 				console.log('duration:', end - start)
 				console.log('number of results', res.length)
 				console.log('************************')
 			}
-		})
+		}))
 	}
+	Promise.all(runProms).then(() => process.exit(0))
 }

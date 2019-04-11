@@ -1,23 +1,24 @@
 
-import os from 'os'
-import cluster from 'cluster'
-
 import fibonacci from 'fibonacci'
 
-export default ({
-	meta: { workerCount },
-	createJob
+import createParallelJobRunner from './index.js'
+
+createParallelJobRunner().then(({
+	meta: { workerCount, isMaster },
+	createJob,
+	dispose: disposeParallelJobRunner
 }) => {
 	const runs = process.argv[2] || 1
 	const iterations = process.argv[3] || 1
 	const complexity = process.argv[4] || 1
 	
 	const { startJob: startFibonacciJob } = createJob({
+		name: 'get-fibonacci',
 		work: complexity => Promise.resolve(fibonacci.iterate(complexity).number)
 	})
 	
 	const start = Date.now()
-	if (cluster.isMaster) {
+	if (isMaster) {
 		console.log('runs:', runs)
 		console.log('iterations:', iterations)
 		console.log('complexity', complexity)
@@ -31,7 +32,7 @@ export default ({
 	let runProms = []
 	for (let i = 0; i < runs; i++) {
 		runProms = runProms.concat(Promise.all(iterationProms).then(res => {
-			if (cluster.isMaster) {
+			if (isMaster) {
 				const end = Date.now()
 				console.log('duration:', end - start)
 				console.log('number of results', res.length)
@@ -39,5 +40,5 @@ export default ({
 			}
 		}))
 	}
-	Promise.all(runProms).then(() => process.exit(0))
-}
+	Promise.all(runProms).then(disposeParallelJobRunner).then(() => process.exit(0))
+})

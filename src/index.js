@@ -16,6 +16,7 @@ export default ({
 } = {}) => {
 	const jobs = []
 	const pending = {}
+	const getJob = name => jobs.find(j => j.name == name)
 	const {
 		handle: handleMessageFromWorker
 	} = createWorkerMessageHandler({
@@ -25,7 +26,7 @@ export default ({
 	const {
 		handle: handleMessageFromMaster
 	} = createMasterMessageHandler({
-		getJob: jobIndex => jobs[jobIndex],
+		getJob,
 		sendMessageToMaster: (...args) => process.send.apply(process, args)
 	})
 	const {
@@ -44,13 +45,18 @@ export default ({
 		    makeQueue,
 		    newId,
 		    workerCount,
-	        getJobIndex: work => jobs.findIndex(j => j.work === work),
+	        getJob,
 	        addPendingJob: ({ workId, job }) => pending[workId] = job
 		})
 	    const { createJob } = createJobCreator({ 
 	        cluster,
 	        queue,
-	        addJob: job => jobs.push(job)
+	        addJob: job => {
+	        	if (cluster.isMaster && getJob(job.name)) {
+	        		throw new Error(`job name '${job.name}' is already created, job names must be unique`)
+	        	}
+	        	jobs.push(job)
+	        }
 	    })
 	    return {
 	    	meta: {

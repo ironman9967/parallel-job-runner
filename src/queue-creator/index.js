@@ -4,14 +4,14 @@ export const create = ({
 	makeQueue,
 	newId,
 	workerCount,
-	getJobIndex,
+	getJob,
 	addPendingJob
 }) => {
 	let workerIndex = 1
 	return {
-		queue: makeQueue(({ job: { work }, start, data }, completeJob) => {
+		queue: makeQueue(({ job: { name, work }, start, data }, completeJob) => {
 			if (cluster.isMaster) {
-				const jobIndex = getJobIndex(work)
+				const job = getJob(name)
 				const workId = newId()
 				const worker = cluster.workers[workerIndex]
 				addPendingJob({
@@ -23,8 +23,8 @@ export const create = ({
 				})
 				worker.send({
 					type: 'do-job',
-					job: {
-						jobIndex,
+					task: {
+						job,
 						workId,
 						data
 					}

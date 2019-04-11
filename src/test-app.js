@@ -3,7 +3,9 @@ import fibonacci from 'fibonacci'
 
 import createParallelJobRunner from './index.js'
 
-createParallelJobRunner().then(({
+createParallelJobRunner({
+	workerCount: process.argv[5]
+}).then(({
 	meta: { workerCount, isMaster },
 	createJob,
 	dispose: disposeParallelJobRunner

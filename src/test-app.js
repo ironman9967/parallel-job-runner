@@ -13,12 +13,12 @@ createParallelJobRunner({
 	const runs = process.argv[2] || 1
 	const iterations = process.argv[3] || 1
 	const complexity = process.argv[4] || 1
-	
+
 	const { startJob: startFibonacciJob } = createJob({
 		name: 'get-fibonacci',
-		work: complexity => Promise.resolve(fibonacci.iterate(complexity).number)
+		work: complexity => fibonacci.iterate(complexity).number
 	})
-	
+
 	const start = Date.now()
 	if (isMaster) {
 		console.log('runs:', runs)
@@ -39,8 +39,17 @@ createParallelJobRunner({
 				console.log('duration:', end - start)
 				console.log('number of results', res.length)
 				console.log('************************')
+				return res
 			}
 		}))
 	}
-	Promise.all(runProms).then(disposeParallelJobRunner).then(() => process.exit(0))
+	Promise.all(runProms)
+	.then(([ runIterations ]) => runIterations.forEach(({
+		meta,
+		//result
+	}) => isMaster
+		? console.log('iteration', meta)
+		: void 0))
+	.then(disposeParallelJobRunner)
+	.then(() => process.exit(0))
 })

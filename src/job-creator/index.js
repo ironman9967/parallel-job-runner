@@ -13,9 +13,9 @@ export const create = ({
 						job,
 						start: Date.now(),
 						data
-					}, ({ success, workResult }) => success
-						? resolve(workResult)
-						: reject(workResult))
+					}, res => res.meta.success
+						? resolve(res)
+						: reject(res))
 				}
 			})
 		}

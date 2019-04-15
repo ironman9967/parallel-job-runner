@@ -11,7 +11,7 @@ import { create as createWorkerSpawner } from './worker-spawner'
 import { create as createQueue } from './queue-creator'
 import { create as createJobCreator } from './job-creator'
 
-export default ({ 
+export default ({
     workerCount = os.cpus().length - 1
 } = {}) => {
 	const jobs = []
@@ -48,7 +48,7 @@ export default ({
 	        getJob,
 	        addPendingJob: ({ workId, job }) => pending[workId] = job
 		})
-	    const { createJob } = createJobCreator({ 
+	    const { createJob } = createJobCreator({
 	        cluster,
 	        queue,
 	        addJob: job => {

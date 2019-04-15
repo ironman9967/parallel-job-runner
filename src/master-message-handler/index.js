@@ -15,7 +15,10 @@ export const create = ({
 					const jobResult = {
 						type: 'job-result',
 						name,
-						workId
+						workId,
+						worker: {
+							pid: process.pid
+						}
 					}
 					prom.then(workResult => {
 						sendMessageToMaster({

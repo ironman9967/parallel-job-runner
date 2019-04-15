@@ -7,14 +7,22 @@ export const create = ({
         handle: ({ type, ...res }) => {
         	switch (type) {
         		case 'job-result':
-        			const { workId, success, workResult } = res
+        			const {
+						name,
+						workId,
+						worker,
+						success,
+						workResult
+					} = res
         			const { start, completeJob } = getPendingJob(workId)
         			if (typeof completeJob == 'function') {
         				completeJob({
-        					success,
-        					start,
-        					duration: Date.now() - start,
-        					workResult
+							meta: {
+								success,
+								timing: { start, duration: Date.now() - start },
+								worker
+							},
+        					result: workResult
         				})
         				removePendingJob(workId)
         			}

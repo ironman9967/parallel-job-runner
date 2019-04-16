@@ -45,10 +45,12 @@ export default async ({
 		},
 		finished: app => {
 			finished = true
-			isMaster ? app({
-				jobs,
-				dispose
-			}) : void 0
+			if (isMaster) {
+				return app({
+					jobs,
+					dispose
+				})
+			}
 		}
 	}
 }

@@ -5,7 +5,7 @@ import os from 'os'
 import cluster from 'cluster'
 
 import { queue as makeQueue } from 'async'
-import newId from 'uuid/v1'
+import newId from 'uuid/v4'
 
 import { createSubject } from 'subject-with-filter'
 

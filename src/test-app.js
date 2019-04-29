@@ -25,6 +25,7 @@ const run = async () => {
 				}
 			}
 		},
+		// jobsArray,
 		dispose: disposeParallelJobRunner
 	}) => {
 		const {

@@ -54,6 +54,10 @@ export default async ({
 			if (isMaster) {
 				return app({
 					jobs,
+					jobsArray: Object.keys(jobs).map(name => ({
+						name,
+						...jobs[name]
+					})),
 					dispose
 				})
 			}

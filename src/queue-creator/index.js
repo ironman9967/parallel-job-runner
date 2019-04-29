@@ -2,7 +2,6 @@
 export const create = ({
 	cluster,
 	makeQueue,
-	newId,
 	workerCount,
 	getJob,
 	addPendingJob
@@ -15,6 +14,7 @@ export const create = ({
 				name,
 				work
 			},
+			workId,
 			start,
 			data
 		}, completeJob) => {
@@ -22,15 +22,15 @@ export const create = ({
 				const job = getJob(name)
 				const worker = cluster.workers[workerIndex]
 				pubEvent({
-					event: 'job-pending',
+					event: 'job-performing',
 					name,
 					timing: { start },
-					workId: job.workId,
+					workId,
 					data,
 					worker: { pid: worker.process.pid }
 				})
 				addPendingJob({
-					workId: job.workId,
+					workId,
 					job: {
 						start,
 						pubEvent,
@@ -40,7 +40,7 @@ export const create = ({
 				worker.send({
 					type: 'do-job',
 					task: {
-						job,
+						job: { ...job, workId },
 						data
 					}
 				})

@@ -44,13 +44,16 @@ const run = async () => {
 		console.log('workerCount:', workerCount)
 		console.log('#####################')
 
-		const iterationProms = []
-		for (let i = 0; i < iterations; i++) {
-			iterationProms.push(startFibonacciJob(complexity))
+		const getIterProms = () => {
+			const iterationProms = []
+			for (let i = 0; i < iterations; i++) {
+				iterationProms.push(startFibonacciJob(complexity))
+			}
+			return iterationProms
 		}
 		let runProms = []
 		for (let i = 0; i < runs; i++) {
-			runProms = runProms.concat(Promise.all(iterationProms).then(res => {
+			runProms = runProms.concat(Promise.all(getIterProms()).then(res => {
 				const end = Date.now()
 				console.log('duration:', end - start)
 				console.log('number of results', res.length)

@@ -12,13 +12,13 @@ export const create = ({
 			filter,
 			next: pubEvent
 		} = createSubject()
-		const workId = newId()
-		addJob({ ...job, workId })
+		addJob(job)
 		return {
 			observeJob: { subscribe, filter },
 			startJob: data => new Promise((resolve, reject) => {
 				if (cluster.isMaster) {
 					const start = Date.now()
+					const workId = newId()
 					pubEvent({
 						event: 'job-queued',
 						name: job.name,
@@ -28,6 +28,7 @@ export const create = ({
 					})
 					queue.push({
 						pubEvent,
+						workId,
 						job,
 						start,
 						data

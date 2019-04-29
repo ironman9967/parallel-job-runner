@@ -9,15 +9,31 @@ export const create = ({
 }) => {
 	let workerIndex = 1
 	return {
-		queue: makeQueue(({ job: { name, work }, start, data }, completeJob) => {
+		queue: makeQueue(({
+			pubEvent,
+			job: {
+				name,
+				work
+			},
+			start,
+			data
+		}, completeJob) => {
 			if (cluster.isMaster) {
 				const job = getJob(name)
-				const workId = newId()
 				const worker = cluster.workers[workerIndex]
+				pubEvent({
+					event: 'job-pending',
+					name,
+					timing: { start },
+					workId: job.workId,
+					data,
+					worker: { pid: worker.process.pid }
+				})
 				addPendingJob({
-					workId,
+					workId: job.workId,
 					job: {
 						start,
+						pubEvent,
 						completeJob
 					}
 				})
@@ -25,7 +41,6 @@ export const create = ({
 					type: 'do-job',
 					task: {
 						job,
-						workId,
 						data
 					}
 				})

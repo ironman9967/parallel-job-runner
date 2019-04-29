@@ -7,6 +7,8 @@ import cluster from 'cluster'
 import { queue as makeQueue } from 'async'
 import newId from 'uuid/v1'
 
+import { createSubject } from 'subject-with-filter'
+
 import { create as createWorkerMessageHandler } from './worker-message-handler'
 import { create as createMasterMessageHandler } from './master-message-handler'
 import { create as createWorkerSpawner } from './worker-spawner'
@@ -26,6 +28,7 @@ export default async ({
 		cluster,
 		makeQueue,
 		newId,
+		createSubject,
 		createWorkerMessageHandler,
 		createMasterMessageHandler,
 		createWorkerSpawner,

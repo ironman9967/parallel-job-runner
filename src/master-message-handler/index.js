@@ -7,7 +7,7 @@ export const create = ({
         handle: ({ type, ...msg }) => {
 			switch (type) {
 				case 'do-job':
-					const { task: { job: { name }, workId, data } } = msg
+					const { task: { job: { name, workId }, data } } = msg
 					let prom = getJob(name).work(data)
 					if (!(prom instanceof Promise)) {
 						prom = Promise.resolve(prom)
@@ -24,6 +24,7 @@ export const create = ({
 						sendMessageToMaster({
 							...jobResult,
 							success: true,
+							data,
 							workResult
 						})
 					})
@@ -31,6 +32,7 @@ export const create = ({
 						sendMessageToMaster({
 							...jobResult,
 							success: false,
+							data,
 							workResult
 						})
 					})

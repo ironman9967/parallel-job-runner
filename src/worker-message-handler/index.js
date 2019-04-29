@@ -12,14 +12,31 @@ export const create = ({
 						workId,
 						worker,
 						success,
+						data,
 						workResult
 					} = res
-        			const { start, completeJob } = getPendingJob(workId)
+        			const {
+						start,
+						pubEvent,
+						completeJob
+					} = getPendingJob(workId)
         			if (typeof completeJob == 'function') {
+						const timing = { start, duration: Date.now() - start }
+						pubEvent({
+							event: 'job-complete',
+							name,
+							timing,
+							workId,
+							data,
+							worker,
+							result: workResult,
+							success
+						})
         				completeJob({
 							meta: {
 								success,
-								timing: { start, duration: Date.now() - start },
+								timing,
+								workId,
 								worker
 							},
         					result: workResult

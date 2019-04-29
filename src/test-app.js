@@ -18,11 +18,21 @@ const run = async () => {
 	finished(({
 		jobs: {
 			getFibonacci: {
-				startJob: startFibonacciJob
+				startJob: startFibonacciJob,
+				observeJob: {
+					subscribe: subFibonacciJobEvents,
+					// filter: filterFibonacciJobEvents
+				}
 			}
 		},
 		dispose: disposeParallelJobRunner
 	}) => {
+		const {
+			unsubscribe: unsubFibonacciJobEvents
+		} = subFibonacciJobEvents(console.log)
+
+		console.log('begin')
+
 		const runs = process.argv[2] || 1
 		const iterations = process.argv[3] || 1
 		const complexity = process.argv[4] || 1
@@ -54,6 +64,7 @@ const run = async () => {
 			//result
 		}) => console.log('iteration', meta)))
 		.then(disposeParallelJobRunner)
+		.then(() => console.log('done'))
 		.then(() => process.exit(0))
 	})
 }

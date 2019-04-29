@@ -3,6 +3,7 @@ export default ({
 	cluster,
 	makeQueue,
 	newId,
+	createSubject,
 	createWorkerMessageHandler,
 	createMasterMessageHandler,
 	createWorkerSpawner,
@@ -39,7 +40,6 @@ export default ({
 		const { queue } = createQueue({
 		    cluster,
 		    makeQueue,
-		    newId,
 		    workerCount,
 	        getJob,
 	        addPendingJob: ({ workId, job }) => pending[workId] = job
@@ -47,6 +47,8 @@ export default ({
 	    const { createJob } = createJobCreator({
 	        cluster,
 	        queue,
+		    newId,
+			createSubject,
 	        addJob: job => {
 	        	if (cluster.isMaster && getJob(job.name)) {
 	        		throw new Error(`job name '${job.name}' is already created, job names must be unique`)

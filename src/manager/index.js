@@ -3,6 +3,7 @@ export default ({
 	cluster,
 	makeQueue,
 	newId,
+	now,
 	createSubject,
 	createWorkerMessageHandler,
 	createMasterMessageHandler,
@@ -17,6 +18,7 @@ export default ({
 	const {
 		handle: handleMessageFromWorker
 	} = createWorkerMessageHandler({
+		now,
 		getPendingJob: workId => pending[workId],
 		removePendingJob: workId => { delete pending[workId] }
 	})
@@ -51,6 +53,7 @@ export default ({
 	        cluster,
 	        queue,
 		    newId,
+			now,
 			createSubject,
 	        addJob: job => {
 	        	if (cluster.isMaster && getJob(job.name)) {

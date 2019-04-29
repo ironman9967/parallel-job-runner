@@ -4,7 +4,8 @@ export const create = ({
 	queue,
 	createSubject,
 	addJob,
-	newId
+	newId,
+	now
 }) => {
 	const unsubs = []
 	return {
@@ -32,7 +33,7 @@ export const create = ({
 				},
 				startJob: data => new Promise((resolve, reject) => {
 					if (cluster.isMaster) {
-						const start = Date.now()
+						const start = now()
 						const workId = newId()
 						pubEvent({
 							event: 'job-queued',

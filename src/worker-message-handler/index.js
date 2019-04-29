@@ -1,5 +1,6 @@
 
 export const create = ({
+	now,
     getPendingJob,
     removePendingJob
 }) => {
@@ -21,7 +22,7 @@ export const create = ({
 						completeJob
 					} = getPendingJob(workId)
         			if (typeof completeJob == 'function') {
-						const timing = { start, duration: Date.now() - start }
+						const timing = { start, duration: now() - start }
 						pubEvent({
 							event: 'job-complete',
 							name,

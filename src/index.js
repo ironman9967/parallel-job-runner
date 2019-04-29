@@ -7,6 +7,8 @@ import cluster from 'cluster'
 import { queue as makeQueue } from 'async'
 import newId from 'uuid/v4'
 
+import now from 'performance-now'
+
 import { createSubject } from 'subject-with-filter'
 
 import { create as createWorkerMessageHandler } from './worker-message-handler'
@@ -28,6 +30,7 @@ export default async ({
 		cluster,
 		makeQueue,
 		newId,
+		now,
 		createSubject,
 		createWorkerMessageHandler,
 		createMasterMessageHandler,

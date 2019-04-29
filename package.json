@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"async": "^2.6.2",
+		"performance-now": "^2.1.0",
 		"subject-with-filter": "^1.0.0",
 		"uuid": "^3.3.2"
 	},

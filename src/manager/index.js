@@ -44,7 +44,10 @@ export default ({
 	        getJob,
 	        addPendingJob: ({ workId, job }) => pending[workId] = job
 		})
-	    const { createJob } = createJobCreator({
+	    const {
+			createJob,
+			dispose: disposeJobCreator
+		} = createJobCreator({
 	        cluster,
 	        queue,
 		    newId,
@@ -62,7 +65,7 @@ export default ({
 	    		isMaster: cluster.isMaster
 	    	},
 	        createJob,
-	        dispose: () => killWorkers()
+	        dispose: () => disposeJobCreator().then(() => killWorkers())
 	    }
 	})
 }

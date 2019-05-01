@@ -21,11 +21,12 @@ export const create = ({
 			if (cluster.isMaster) {
 				const job = getJob(name)
 				const worker = cluster.workers[workerIndex]
+				const timing = { start }
 				if (worker) {
 					pubEvent({
 						event: 'job-performing',
 						name,
-						timing: { start },
+						timing,
 						workId,
 						data,
 						worker: { pid: worker.process.pid }
@@ -51,14 +52,14 @@ export const create = ({
 					pubEvent({
 						event: 'job-cancelled',
 						name,
-						timing: { start },
+						timing,
 						workId,
 						data,
 						error
 					})
 					completeJob({
 						meta: {
-							success,
+							success: false,
 							timing,
 							workId
 						},

@@ -21,29 +21,50 @@ export const create = ({
 			if (cluster.isMaster) {
 				const job = getJob(name)
 				const worker = cluster.workers[workerIndex]
-				pubEvent({
-					event: 'job-performing',
-					name,
-					timing: { start },
-					workId,
-					data,
-					worker: { pid: worker.process.pid }
-				})
-				addPendingJob({
-					workId,
-					job: {
-						start,
-						pubEvent,
-						completeJob
-					}
-				})
-				worker.send({
-					type: 'do-job',
-					task: {
-						job: { ...job, workId },
-						data
-					}
-				})
+				if (worker) {
+					pubEvent({
+						event: 'job-performing',
+						name,
+						timing: { start },
+						workId,
+						data,
+						worker: { pid: worker.process.pid }
+					})
+					addPendingJob({
+						workId,
+						job: {
+							start,
+							pubEvent,
+							completeJob
+						}
+					})
+					worker.send({
+						type: 'do-job',
+						task: {
+							job: { ...job, workId },
+							data
+						}
+					})
+				}
+				else {
+					const error = new Error('worker disposed')
+					pubEvent({
+						event: 'job-cancelled',
+						name,
+						timing: { start },
+						workId,
+						data,
+						error
+					})
+					completeJob({
+						meta: {
+							success,
+							timing,
+							workId
+						},
+						result: error
+					})
+				}
 				if (workerIndex == workerCount) {
 					workerIndex = 1
 				}

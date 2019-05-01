@@ -48,22 +48,13 @@ export const create = ({
 					})
 				}
 				else {
-					const error = new Error('worker disposed')
-					pubEvent({
-						event: 'job-cancelled',
-						name,
-						timing,
-						workId,
-						data,
-						error
-					})
 					completeJob({
 						meta: {
 							success: false,
 							timing,
 							workId
 						},
-						result: error
+						result: new Error('worker disposed')
 					})
 				}
 				if (workerIndex == workerCount) {
